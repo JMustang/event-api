@@ -5,6 +5,9 @@ import (
 	"event-app/internal/database"
 	"event-app/internal/env"
 	"log"
+
+	_ "github.com/joho/godotenv/autoload"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type application struct {
