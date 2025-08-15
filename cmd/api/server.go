@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func serve(app *application) error {
+func (app *application) serve() error {
 	server := &http.Server{
 		Addr:         fmt.Sprintf(":%d", app.port),
 		Handler:      app.routes(),
