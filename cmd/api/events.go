@@ -88,6 +88,17 @@ func (app *application) updateEvent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, updatedEvent)
 }
-func (app *application) deleteEvent(c *gin.Context) [
-	
-]
+
+func (app *application) deleteEvent(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "❌ Invalid envent ID"})
+	}
+
+	if err := app.models.Events.Delete(id); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to delete event"})
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+
+}
