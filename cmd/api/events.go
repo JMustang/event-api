@@ -26,6 +26,16 @@ func (app *application) createEvent(c *gin.Context) {
 	c.JSON(http.StatusCreated, event)
 }
 
+func (app *application) getAllEvent(c *gin.Context) {
+	events, err := app.models.Events.GetAll()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to retreive events"})
+	}
+
+	c.JSON(http.StatusOK, events)
+}
+
 func (app *application) getEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -45,7 +55,6 @@ func (app *application) getEvent(c *gin.Context) {
 	c.JSON(http.StatusOK, event)
 }
 
-func (app *application) getAllEvent(c *gin.Context)
 func (app *application) updateEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -79,4 +88,6 @@ func (app *application) updateEvent(c *gin.Context) {
 
 	c.JSON(http.StatusOK, updatedEvent)
 }
-func (app *application) deleteEvent(c *gin.Context)
+func (app *application) deleteEvent(c *gin.Context) [
+	
+]
