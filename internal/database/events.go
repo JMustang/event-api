@@ -66,3 +66,22 @@ func (m *EventModel) GetAll() ([]*Events, error) {
 	}
 	return events, nil
 }
+
+func (m *EventModel) Get(id int) (*Events, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
+	query := "SELECT * FROM events WHERE id = $1"
+
+	var event Events
+
+	err := m.DB.QueryRowContext(ctx, query, id).Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return &event, nil
+}
