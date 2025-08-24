@@ -35,7 +35,7 @@ func (app *application) registerUser(c *gin.Context) {
 		Name:     register.Name,
 	}
 
-	err = app.models.Users.insert(&user)
+	err = app.models.Users.Insert(&user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Could not create user"})
 		return
