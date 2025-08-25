@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"time"
 )
 
@@ -11,19 +12,24 @@ type EventModel struct {
 }
 
 type Events struct {
-	Id          int       `json:"id"`
-	OwnerId     int       `json:"ownerId" binding:"required"`
-	Name        string    `json:"name" binding:"required,min=3"`
-	Description string    `json:"description" binding:"required, min=10"`
-	Date        time.Time `json:"date" binding:"required, datetime=2006-01-02"`
-	Location    string    `json:"location" binding:"required, min=3"`
+	Id          int    `json:"id"`
+	OwnerId     int    `json:"ownerId" binding:"required"`
+	Name        string `json:"name" binding:"required,min=3"`
+	Description string `json:"description" binding:"required,min=10"`
+	Date        string `json:"date" binding:"required,datetime=2006-01-02"`
+	Location    string `json:"location" binding:"required,min=3"`
 }
 
 func (m *EventModel) Insert(event *Events) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
-	query := "INSERT INTO events (owner_id, name, description, date, location) VALUES ($1, $2, $3, $4, $5)"
+	parsedDate, err := time.Parse("2006-01-02", event.Date)
+	if err != nil {
+		return fmt.Errorf("invalid date format: %w", err)
+	}
+
+	query := "INSERT INTO events (owner_id, name, description, date, location) VALUES ($1, $2, $3, $4, $5) RETURNING id"
 
 	return m.DB.QueryRowContext(
 		ctx,
@@ -31,8 +37,7 @@ func (m *EventModel) Insert(event *Events) error {
 		event.OwnerId,
 		event.Name,
 		event.Description,
-		event.Date,
-		event.Date,
+		parsedDate,
 		event.Location).Scan(&event.Id)
 }
 
