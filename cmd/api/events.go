@@ -102,3 +102,7 @@ func (app *application) deleteEvent(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 
 }
+
+func (app *application) addAttendeeToEvent(c *gin.Context)
+
+func (app *application) getAttendeeForEvent(c *gin.Context)
