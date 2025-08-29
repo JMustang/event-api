@@ -144,12 +144,12 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 		return
 	}
 
-	attendee := database.Attendees{
+	attendee := database.Attendee{
 		EventId: event.Id,
 		UserId:  userToAdd.Id,
 	}
 
-	_, err = app.models.Attendees.insert(&attendee)
+	_, err = app.models.Attendees.Insert(&attendee)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to add attendee"})
 	}
