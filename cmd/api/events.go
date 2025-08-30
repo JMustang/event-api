@@ -134,7 +134,7 @@ func (app *application) addAttendeeToEvent(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "❌ User not found"})
 	}
 
-	existingAttendee, err := app.models.Attendees.getByEventAndAttendee(event.Id, userToAdd.Id)
+	existingAttendee, err := app.models.Attendees.GetByEventAndAttendee(event.Id, userToAdd.Id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to retreive attendee"})
 	}
