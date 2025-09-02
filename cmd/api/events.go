@@ -9,7 +9,7 @@ import (
 )
 
 func (app *application) createEvent(c *gin.Context) {
-	var event database.Events
+	var event database.Event
 
 	if err := c.ShouldBindJSON(&event); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -72,7 +72,7 @@ func (app *application) updateEvent(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "❌ Event not found"})
 	}
 
-	updatedEvent := &database.Events{}
+	updatedEvent := &database.Event{}
 
 	if err := c.ShouldBindJSON(updatedEvent); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -202,7 +202,7 @@ func (app *application) getEventsByAttendee(c *gin.Context) {
 		return
 	}
 
-	events, err := app.models.Events.GetByAttendee(id)
+	events, err := app.models.Attendees.GetEventsByAttendee(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get events"})
 		return
