@@ -11,7 +11,7 @@ type EventModel struct {
 	DB *sql.DB
 }
 
-type Events struct {
+type Event struct {
 	Id          int    `json:"id"`
 	OwnerId     int    `json:"ownerId" binding:"required"`
 	Name        string `json:"name" binding:"required,min=3"`
@@ -20,7 +20,7 @@ type Events struct {
 	Location    string `json:"location" binding:"required,min=3"`
 }
 
-func (m *EventModel) Insert(event *Events) error {
+func (m *EventModel) Insert(event *Event) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -41,7 +41,7 @@ func (m *EventModel) Insert(event *Events) error {
 		event.Location).Scan(&event.Id)
 }
 
-func (m *EventModel) GetAll() ([]*Events, error) {
+func (m *EventModel) GetAll() ([]*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
@@ -54,10 +54,10 @@ func (m *EventModel) GetAll() ([]*Events, error) {
 
 	defer rows.Close()
 
-	events := []*Events{}
+	events := []*Event{}
 
 	for rows.Next() {
-		var event Events
+		var event Event
 
 		err := rows.Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
 		if err != nil {
@@ -72,13 +72,13 @@ func (m *EventModel) GetAll() ([]*Events, error) {
 	return events, nil
 }
 
-func (m *EventModel) Get(id int) (*Events, error) {
+func (m *EventModel) Get(id int) (*Event, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
 	query := "SELECT * FROM events WHERE id = $1"
 
-	var event Events
+	var event Event
 
 	err := m.DB.QueryRowContext(ctx, query, id).Scan(&event.Id, &event.OwnerId, &event.Name, &event.Description, &event.Date, &event.Location)
 	if err != nil {
@@ -91,7 +91,7 @@ func (m *EventModel) Get(id int) (*Events, error) {
 	return &event, nil
 }
 
-func (m *EventModel) Update(event *Events) error {
+func (m *EventModel) Update(event *Event) error {
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 
