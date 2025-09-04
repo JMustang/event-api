@@ -3,8 +3,10 @@ package main
 import (
 	"event-app/internal/database"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -21,6 +23,44 @@ type loginRequest struct {
 
 type loginResponse struct {
 	Token string `json:"token"`
+}
+
+func (app *application) login(c *gin.Context) {
+	var auth loginRequest
+	if err := c.ShouldBindJSON(&auth); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	existingUser, err := app.models.Users.getByEmail(auth.Email)
+	if existingUser == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Invalid email or password"})
+		return
+	}
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Something went wrong"})
+		return
+	}
+
+	err = bcrypt.CompareHashAndPassword([]byte(existingUser.password), []byte(auth.Password))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Invalid email or password"})
+		return
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"userId": existingUser.Id,
+		"expr":   time.Now().Add(time.Hour * 72).Unix(),
+	})
+
+	tokenString, err := token.SignedString([]byte(app.jwtSecret))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Error generating token"})
+		return
+	}
+
+	c.JSON(http.StatusOK, loginResponse{Token: tokenString})
 }
 
 func (app *application) registerUser(c *gin.Context) {
