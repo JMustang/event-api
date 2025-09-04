@@ -19,6 +19,10 @@ type loginRequest struct {
 	Password string `json:"password" binding:"required,min=8"`
 }
 
+type loginResponse struct {
+	Token string `json:"token"`
+}
+
 func (app *application) registerUser(c *gin.Context) {
 	var register registerRequest
 
