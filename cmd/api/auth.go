@@ -32,7 +32,7 @@ func (app *application) login(c *gin.Context) {
 		return
 	}
 
-	existingUser, err := app.models.Users.getByEmail(auth.Email)
+	existingUser, err := app.models.Users.GetByEmail(auth.Email)
 	if existingUser == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Invalid email or password"})
 		return
@@ -43,7 +43,7 @@ func (app *application) login(c *gin.Context) {
 		return
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(existingUser.password), []byte(auth.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(existingUser.Password), []byte(auth.Password))
 	if err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Invalid email or password"})
 		return
