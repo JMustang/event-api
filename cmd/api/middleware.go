@@ -38,5 +38,25 @@ func (app *application) AuthMiddleware() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		// check if the token is off the tape claim
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Invalid token"})
+			c.Abort()
+			return
+		}
+
+		userId := claims["userId"].(float64)
+		user, err := app.models.Users.Get(int(userId))
+		if err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "❌ Unauthorized access"})
+			c.Abort()
+			return
+		}
+
+		c.Set("user", user)
+
+		c.Next()
 	}
 }
