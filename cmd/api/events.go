@@ -66,6 +66,7 @@ func (app *application) updateEvent(c *gin.Context) {
 		return
 	}
 
+	user := app.GetUserFromContext(c)
 	existingEvent, err := app.models.Events.Get(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to retreive event"})
@@ -74,6 +75,11 @@ func (app *application) updateEvent(c *gin.Context) {
 
 	if existingEvent == nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "❌ Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "❌ You are not authorized to update this event"})
 		return
 	}
 
@@ -98,6 +104,24 @@ func (app *application) deleteEvent(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "❌ Invalid event ID"})
+		return
+	}
+
+	user := app.GetUserFromContext(c)
+	existingEvent, err := app.models.Events.Get(id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "❌ Failed to retreive event"})
+		return
+	}
+
+	if existingEvent == nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "❌ Event not found"})
+		return
+	}
+
+	if existingEvent.OwnerId != user.Id {
+		c.JSON(http.StatusForbidden, gin.H{"error": "❌ You are not authorized to delete this event"})
 		return
 	}
 
